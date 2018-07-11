@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Animated, Easing, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 
 const INDETERMINATE_WIDTH_FACTOR = 0.3;
 const BAR_WIDTH_ZERO_POSITION =
@@ -21,6 +22,12 @@ export default class ProgressBar extends Component {
     style: PropTypes.any,
     unfilledColor: PropTypes.string,
     width: PropTypes.number,
+    gradient: PropTypes.shape({
+      start: LinearGradient.propTypes.start,
+      end: LinearGradient.propTypes.end,
+      colors: LinearGradient.propTypes.colors,
+      locations: LinearGradient.propTypes.locatios,
+    }),
     useNativeDriver: PropTypes.bool,
     // eslint-disable-next-line react/forbid-prop-types
     animationConfig: PropTypes.object.isRequired,
@@ -36,6 +43,7 @@ export default class ProgressBar extends Component {
     indeterminate: false,
     progress: 0,
     width: 150,
+    gradient: null,
     useNativeDriver: false,
     animationConfig: { bounciness: 0 },
     animationType: 'spring',
@@ -163,6 +171,18 @@ export default class ProgressBar extends Component {
         },
       ],
     };
+    let gradientBackground = null;
+    if (this.props.gradient != null) {
+      progressStyle.backgroundColor = null;
+      gradientBackground = (
+        <LinearGradient
+          start={this.props.gradient.start}
+          end={this.props.gradient.end}
+          colors={this.props.gradient.colors}
+          style={{ width, height }}
+        />
+      );
+    }
 
     return (
       <View
@@ -170,7 +190,9 @@ export default class ProgressBar extends Component {
         onLayout={this.handleLayout}
         {...restProps}
       >
-        <Animated.View style={progressStyle} />
+        <Animated.View style={progressStyle} >
+          {gradientBackground}
+        </Animated.View>
         {children}
       </View>
     );
